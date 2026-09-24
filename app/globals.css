@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+@source inline("{bg,text,border}-{brand,ok,warn,bad,ai,info,sun,fg-3}");
+@source inline("bg-{brand,ok,warn,bad,ai,info,sun}-soft");
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+  Nexo4Pymes: sistema de diseño
+  Mar (azul profundo mediterráneo) como color de marca,
+  Sol (ámbar de alta visibilidad, como la ropa de trabajo) para lo que está pasando ahora,
+  neutros fríos de piedra y cal.
+*/
+:root {
+  --bg: #f4f6f7;
+  --surface: #ffffff;
+  --surface-2: #eef2f4;
+  --surface-3: #e4e9ec;
+  --border: #dde3e7;
+  --border-strong: #c6cfd5;
+  --text: #0c1a22;
+  --text-2: #465661;
+  --text-3: #7a8893;
+
+  --brand: #0a5d78;
+  --brand-strong: #07465b;
+  --brand-soft: #e1eff4;
+  --brand-ink: #ffffff;
+
+  --sun: #e8950c;
+  --sun-soft: #fdf1dc;
+  --ok: #13845a;
+  --ok-soft: #e1f3ea;
+  --warn: #b7740a;
+  --warn-soft: #fbf0d9;
+  --bad: #cf3f37;
+  --bad-soft: #fbe6e4;
+  --ai: #5b4bd6;
+  --ai-soft: #ecebfb;
+  --info: #2f6ad0;
+  --info-soft: #e5edfb;
+
+  --shadow-1: 0 1px 2px rgb(12 26 34 / 0.06), 0 0 0 1px rgb(12 26 34 / 0.04);
+  --shadow-2: 0 8px 24px -8px rgb(12 26 34 / 0.18), 0 0 0 1px rgb(12 26 34 / 0.05);
+  --shadow-3: 0 24px 60px -18px rgb(12 26 34 / 0.35), 0 0 0 1px rgb(12 26 34 / 0.06);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #081116;
+  --surface: #0d1a21;
+  --surface-2: #12232c;
+  --surface-3: #1a2f3a;
+  --border: #1d313c;
+  --border-strong: #2a4351;
+  --text: #e6eef2;
+  --text-2: #a2b3bd;
+  --text-3: #6f8492;
+
+  --brand: #3db1d3;
+  --brand-strong: #6cc7e2;
+  --brand-soft: #0f3342;
+  --brand-ink: #041319;
+
+  --sun: #f5ab2e;
+  --sun-soft: #3a2a0d;
+  --ok: #37c28a;
+  --ok-soft: #0e3325;
+  --warn: #e8a93a;
+  --warn-soft: #36290f;
+  --bad: #ff6b61;
+  --bad-soft: #3d1715;
+  --ai: #9d8fff;
+  --ai-soft: #231e4d;
+  --info: #6d9bff;
+  --info-soft: #172846;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 0 0 1px rgb(255 255 255 / 0.04);
+  --shadow-2: 0 10px 30px -10px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.05);
+  --shadow-3: 0 30px 70px -20px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(255 255 255 / 0.06);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-fg: var(--text);
+  --color-fg-2: var(--text-2);
+  --color-fg-3: var(--text-3);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-ink: var(--brand-ink);
+  --color-sun: var(--sun);
+  --color-sun-soft: var(--sun-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-ai: var(--ai);
+  --color-ai-soft: var(--ai-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-geist), ui-sans-serif, sans-serif;
+
+  --shadow-e1: var(--shadow-1);
+  --shadow-e2: var(--shadow-2);
+  --shadow-e3: var(--shadow-3);
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --animate-pulse-ring: pulse-ring 1.8s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--brand) 30%, transparent);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+  border-radius: 6px;
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.row-flash {
+  animation: row-flash 2.2s ease-out;
+}
+@keyframes row-flash {
+  0%, 25% { background-color: color-mix(in oklab, var(--sun) 22%, transparent); }
+  100% { background-color: transparent; }
+}
+
+.grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print { display: none !important; }
+}
+
+/* Mapa */
+:root {
+  --map-sea-1: #d9ebf2;
+  --map-sea-2: #c4dfea;
+  --map-dot: rgb(10 93 120 / 0.1);
+  --map-land: #fbfcfa;
+  --map-coast: #93b9c8;
+  --map-coast-glow: rgb(255 255 255 / 0.6);
+  --map-sierra: rgb(61 122 50 / 0.09);
+  --map-town: #6f7f8a;
+}
+:root[data-theme="dark"] {
+  --map-sea-1: #0a1c25;
+  --map-sea-2: #071419;
+  --map-dot: rgb(61 177 211 / 0.08);
+  --map-land: #13242d;
+  --map-coast: #2a4b5a;
+  --map-coast-glow: rgb(61 177 211 / 0.08);
+  --map-sierra: rgb(80 160 90 / 0.08);
+  --map-town: #7d93a0;
+}
