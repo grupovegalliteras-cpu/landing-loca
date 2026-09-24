@@ -142,7 +142,8 @@ function Sidebar() {
   const showEstado = useUi((s) => s.showEstado);
   const activeGroup = MODULO_POR_ID[section]?.grupo;
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const counts: Record<string, number> = { "central-avisos": avisosNuevos, facturacion: borradores, vacaciones: vacPend, trabajos: pendientes };
+  const hydrated = useHydrated();
+  const counts: Record<string, number> = hydrated ? { "central-avisos": avisosNuevos, facturacion: borradores, vacaciones: vacPend, trabajos: pendientes } : {};
 
   const item = (id: string) => {
     const m = MODULO_POR_ID[id];
@@ -327,8 +328,9 @@ function Notifications() {
   const mark = useDemo((s) => s.markNotifsRead);
   const { go } = useContextNav();
   const [open, setOpen] = useState(false);
+  const hydrated = useHydrated();
   const list = useMemo(() => notifs.filter((n) => n.to === "panel").slice(0, 12), [notifs]);
-  const unread = list.filter((n) => !n.leida).length;
+  const unread = hydrated ? list.filter((n) => !n.leida).length : 0;
   return (
     <div className="relative">
       <IconButton label="Notificaciones" onClick={() => { setOpen((v) => !v); if (!open) setTimeout(() => mark("panel"), 1500); }} className="relative">

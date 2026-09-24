@@ -48,32 +48,32 @@ function Hero() {
       </div>
       <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pt-28 pb-16 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:pt-32 lg:pb-24">
         <div>
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[13px] text-white/80 backdrop-blur">
+          <div className="fade-up inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[13px] text-white/80 backdrop-blur">
             <span className="size-1.5 rounded-full bg-sun" /> Panel de oficina y app de técnicos, conectados
-          </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-5 font-display text-[44px] leading-[1.02] font-semibold tracking-[-0.03em] sm:text-[60px] lg:text-[68px]">
+          </div>
+          <h1 className="fade-up mt-5 font-display text-[44px] leading-[1.02] font-semibold tracking-[-0.03em] sm:text-[60px] lg:text-[64px]" style={{ animationDelay: "80ms" }}>
             La llamada entra.
             <br />
             <span className="text-[#8fd9ea]">El trabajo sale solo.</span>
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="mt-5 max-w-xl text-[17px] leading-relaxed text-white/75 sm:text-[18px]">
+          </h1>
+          <p className="fade-up mt-5 max-w-xl text-[17px] leading-relaxed text-white/75 sm:text-[18px]" style={{ animationDelay: "160ms" }}>
             Recogemos cada llamada y cada WhatsApp de tus clientes, los convertimos en órdenes de trabajo y los mandamos al móvil de tus técnicos. Parte, fotos, firma, factura con VeriFactu y cobro, sin pasar nada a mano.
-          </motion.p>
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }} className="mt-8 flex flex-wrap gap-3">
+          </p>
+          <div className="fade-up mt-8 flex flex-wrap gap-3" style={{ animationDelay: "240ms" }}>
             <Link href="/demo?tour=1" className="group flex h-12 items-center gap-2 rounded-xl bg-sun px-5 text-[15px] font-semibold text-[#1d1300] shadow-[0_10px_30px_-10px_rgb(245_171_46/0.7)] transition hover:brightness-105">
               <PlayCircle className="size-5" /> Ver la demo en vivo
             </Link>
             <Link href="/#contacto" className="flex h-12 items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 text-[15px] font-medium text-white backdrop-blur transition hover:bg-white/10">
               Pide tu demo con tus datos
             </Link>
-          </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-white/60">
+          </div>
+          <div className="fade-up mt-10 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-white/60" style={{ animationDelay: "400ms" }}>
             {["Sin cambiar de número", "Funciona sin cobertura", "Datos en la UE", "Hecho en Mallorca"].map((t) => (
               <span key={t} className="flex items-center gap-1.5">
                 <Check className="size-3.5 text-[#7fe3b8]" /> {t}
               </span>
             ))}
-          </motion.div>
+          </div>
         </div>
         <HeroAnim />
       </div>
@@ -108,7 +108,7 @@ function SectorPicker() {
               </button>
             ))}
           </div>
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div key={sector.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }} className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_1fr_1fr]">
               <div>
                 <div className="flex items-center gap-3">

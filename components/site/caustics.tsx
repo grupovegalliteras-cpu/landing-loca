@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 const VERT = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
-const FRAG = `precision mediump float;
+// El dibujo necesita alta precisión: con mediump (muchos móviles) sale ruido en bloques.
+const FRAG = `precision highp float;
 uniform vec2 r;uniform float t;uniform vec3 deep;uniform vec3 mid;uniform vec3 light;
 void main(){
   vec2 uv=gl_FragCoord.xy/r.y;
@@ -39,7 +40,10 @@ export function Caustics({ className, deep = "#041820", mid = "#0a4a5e", light =
     if (!canvas) return;
     const gl = canvas.getContext("webgl", { antialias: false, premultipliedAlpha: false });
     if (!gl) return;
-    const sh = (type: number, src: string) => {
+    // sin alta precisión en el fragment shader nos quedamos con el degradado de CSS
+    const hp = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+    if (!hp || hp.precision < 16) return;
+    const sh =(type: number, src: string) => {
       const s = gl.createShader(type)!;
       gl.shaderSource(s, src);
       gl.compileShader(s);
@@ -63,38 +67,57 @@ export function Caustics({ className, deep = "#041820", mid = "#0a4a5e", light =
     gl.uniform3fv(gl.getUniformLocation(prog, "mid"), hex(mid));
     gl.uniform3fv(gl.getUniformLocation(prog, "light"), hex(light));
 
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t0 = performance.now();
+    const draw = () => {
+      // con movimiento reducido se pinta un instante fijo y bonito de la animación
+      const t = reduce ? 18 : ((performance.now() - t0) / 1000) % 1200;
+      gl.uniform1f(uT, t);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+
     const resize = () => {
       const s = 0.5;
       const w = Math.max(1, Math.floor(canvas.clientWidth * s));
       const h = Math.max(1, Math.floor(canvas.clientHeight * s));
-      canvas.width = w;
-      canvas.height = h;
-      gl.viewport(0, 0, w, h);
-      gl.uniform2f(uR, w, h);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        gl.viewport(0, 0, w, h);
+        gl.uniform2f(uR, w, h);
+      }
+      // cambiar el tamaño borra el lienzo: hay que volver a pintar
+      draw();
     };
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let visible = true;
     const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting));
     io.observe(canvas);
     let raf = 0;
-    const t0 = performance.now();
     const frame = () => {
-      if (visible) {
-        gl.uniform1f(uT, (performance.now() - t0) / 1000);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      }
-      if (!reduce) raf = requestAnimationFrame(frame);
+      if (visible) draw();
+      raf = requestAnimationFrame(frame);
     };
-    frame();
+    if (!reduce) raf = requestAnimationFrame(frame);
+
+    const lost = (e: Event) => e.preventDefault();
+    canvas.addEventListener("webglcontextlost", lost);
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
+      canvas.removeEventListener("webglcontextlost", lost);
     };
   }, [deep, mid, light]);
-  return <canvas ref={ref} className={cn("block size-full", className)} aria-hidden style={{ background: deep }} />;
+  return (
+    <canvas
+      ref={ref}
+      className={cn("block size-full", className)}
+      aria-hidden
+      style={{ background: `radial-gradient(ellipse at 70% 20%, ${mid}, ${deep} 70%)` }}
+    />
+  );
 }

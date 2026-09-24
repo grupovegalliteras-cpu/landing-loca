@@ -44,13 +44,13 @@ export function AppShell({ framed = true }: { framed?: boolean }) {
   const Screen = APP_SCREENS[top.screen];
   const now = useNow(15000);
   const notifs = useDemo((s) => s.notifs);
-  const unread = notifs.filter((n) => n.to === "app" && !n.leida).length;
+  const unread = hydrated ? notifs.filter((n) => n.to === "app" && !n.leida).length : 0;
 
   return (
     <div className={cn("relative flex h-full w-full flex-col overflow-hidden bg-bg text-fg", !framed && "h-dvh")}>
       {/* barra de estado */}
       <div className={cn("relative z-40 flex h-[50px] shrink-0 items-end justify-between px-7 pb-1.5 text-[13px] font-semibold", !framed && "h-[max(12px,env(safe-area-inset-top))] items-center pb-0 opacity-0")}>
-        <span className="tabular">{fmt.time(now)}</span>
+        <span className="tabular" suppressHydrationWarning>{hydrated ? fmt.time(now) : ""}</span>
         <span className="flex items-center gap-1.5">
           <Signal className={cn("size-3.5", offline && "opacity-30")} />
           {offline ? <WifiOff className="size-3.5 text-bad" /> : <Wifi className="size-3.5" />}
