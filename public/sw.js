@@ -1,6 +1,6 @@
 // Service worker de la demo de Nexo4Pymes: la app funciona sin red con los datos de la demo.
-const CACHE = "nexo4pymes-v1";
-const PRECACHE = ["/", "/app", "/demo", "/panel", "/manifest.webmanifest", "/pwa-icon/192"];
+const CACHE = "nexo4pymes-v2";
+const PRECACHE = ["/", "/app", "/demo", "/panel", "/manifest.webmanifest", "/brand/icono-192.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)).catch(() => {}));

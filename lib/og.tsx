@@ -1,6 +1,17 @@
+/* eslint-disable @next/next/no-img-element -- dentro de ImageResponse no hay <Image> */
 import { ImageResponse } from "next/og";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 export const OG_SIZE = { width: 1200, height: 630 };
+
+const pieza = (nombre: string) => `data:image/png;base64,${readFileSync(join(process.cwd(), "public/brand", `${nombre}-oscuro.png`)).toString("base64")}`;
+const tam = (nombre: string) => {
+  const b = readFileSync(join(process.cwd(), "public/brand", `${nombre}-oscuro.png`));
+  return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
+};
+const MARCA = tam("marca");
+const NOMBRE = tam("nombre");
 
 /** Bricolage en negrita para el titular. Si no se puede descargar al compilar, se usa la letra por defecto. */
 async function fuente(): Promise<ArrayBuffer | null> {
@@ -36,18 +47,10 @@ export async function ogImage({ kicker, title, sub, chips }: { kicker: string; t
 
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <svg width="60" height="60" viewBox="0 0 32 32">
-            <rect width="32" height="32" rx="9" fill="#ffffff" />
-            <path d="M10 21.5 C 10 13, 22 19, 22 10.5" fill="none" stroke="#f5ab2e" strokeWidth="2.6" strokeLinecap="round" />
-            <circle cx="10" cy="21.5" r="3.4" fill="#0a5d78" />
-            <circle cx="22" cy="10.5" r="3.4" fill="#0a5d78" />
-          </svg>
-          <div style={{ display: "flex", fontSize: 36, fontWeight: 700, letterSpacing: -1, fontFamily: bold ? "Bricolage" : undefined }}>
-            <span>Nexo</span>
-            <span style={{ color: "#f5ab2e" }}>4</span>
-            <span>Pymes</span>
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {/* logo real, el mismo que en la web */}
+          <img src={pieza("marca")} height={64} width={Math.round((64 * MARCA.w) / MARCA.h)} alt="" />
+          <img src={pieza("nombre")} height={38} width={Math.round((38 * NOMBRE.w) / NOMBRE.h)} alt="" />
           <div style={{ display: "flex", marginLeft: "auto", fontSize: 24, color: "rgba(255,255,255,0.6)" }}>{kicker}</div>
         </div>
 
