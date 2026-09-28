@@ -49,6 +49,10 @@ Se despliega en Vercel tal cual (proyecto Next.js, sin variables de entorno).
 
 Sectores: `mantenimiento`, `limpieza`, `piscinas`, `climatizacion`, `jardineria`, `plagas`, `solar`, `reformas`.
 
+## Vista previa en WhatsApp
+
+Al pegar un enlace en WhatsApp sale una imagen con el titular (`app/opengraph-image.tsx`), y cada sector tiene la suya (`/sectores/piscinas`, etc.). En Vercel la dirección se detecta sola; con un dominio propio, define `NEXT_PUBLIC_SITE_URL=https://tudominio.com`. WhatsApp guarda la vista previa un tiempo: si cambias la imagen, prueba con el enlace añadiendo `?v=2`.
+
 ## Etiquetas de estado de los módulos
 
 Cada módulo tiene `estado: 'disponible' | 'a-medida'` en `data/modules.ts`. Están ocultas por defecto; se ven añadiendo `?estado=1` a la URL (landing, `/servicios` y panel).

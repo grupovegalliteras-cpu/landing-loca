@@ -11,7 +11,9 @@ export async function generateMetadata({ params }: PageProps<"/sectores/[sector]
   const { sector } = await params;
   if (!isSectorId(sector)) return {};
   const s = SECTOR_POR_ID[sector];
-  return { title: `${s.nombre}: panel y app para tu empresa`, description: `${s.lema}. ${s.dolor}` };
+  const title = `${s.nombre}: panel y app para tu empresa`;
+  const description = `${s.lema}. ${s.dolor}`;
+  return { title, description, openGraph: { type: "website", locale: "es_ES", siteName: "Nexo4Pymes", title: `Nexo4Pymes para ${s.nombre.toLowerCase()}`, description } };
 }
 
 export default async function Page({ params }: PageProps<"/sectores/[sector]">) {

@@ -38,7 +38,8 @@ export function Caustics({ className, deep = "#041820", mid = "#0a4a5e", light =
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const gl = canvas.getContext("webgl", { antialias: false, premultipliedAlpha: false });
+    // opaco y conservando el último fotograma: si el navegador no repinta, nunca queda un hueco blanco
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, preserveDrawingBuffer: true });
     if (!gl) return;
     // sin alta precisión en el fragment shader nos quedamos con el degradado de CSS
     const hp = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
@@ -84,8 +85,9 @@ export function Caustics({ className, deep = "#041820", mid = "#0a4a5e", light =
         canvas.width = w;
         canvas.height = h;
         gl.viewport(0, 0, w, h);
-        gl.uniform2f(uR, w, h);
       }
+      // siempre: si el lienzo ya tenía este tamaño (efecto montado dos veces), el programa nuevo no lo sabría
+      gl.uniform2f(uR, w, h);
       // cambiar el tamaño borra el lienzo: hay que volver a pintar
       draw();
     };

@@ -9,7 +9,7 @@ import { SECTOR_POR_ID, type SectorId } from "@/data/sectors";
 import { useUi } from "@/store/ui";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/icon";
-import { SiteFooter, SiteNav } from "./chrome";
+import { ContactDock, SiteFooter, SiteNav } from "./chrome";
 
 export function Servicios() {
   const [q, setQ] = useState("");
@@ -19,12 +19,12 @@ export function Servicios() {
   return (
     <div className="bg-bg text-fg">
       <SiteNav />
-      <main className="mx-auto max-w-7xl px-4 pt-28 pb-20 sm:px-6">
-        <h1 className="font-display text-[40px] leading-tight font-semibold tracking-tight sm:text-[52px]">Catálogo de servicios</h1>
+      <main className="mx-auto max-w-7xl px-5 pt-24 pb-16 sm:px-6 sm:pt-28 sm:pb-20">
+        <h1 className="font-display text-[36px] leading-tight font-semibold tracking-tight sm:text-[52px]">Catálogo de servicios</h1>
         <p className="mt-3 max-w-2xl text-[17px] text-fg-2">Todo lo que podemos montar para tu empresa. Empiezas por un módulo y vas sumando. Cada uno se puede probar en la demo.</p>
         <label className="relative mt-8 flex max-w-md items-center">
           <Search className="pointer-events-none absolute left-3.5 size-4 text-fg-3" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Busca: fichaje, factura, WhatsApp…" className="h-12 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-[15px] outline-none focus:border-brand" aria-label="Buscar servicio" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Busca: fichaje, factura, WhatsApp…" className="h-12 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-[16px] outline-none focus:border-brand" aria-label="Buscar servicio" />
         </label>
         <div className="mt-12 grid gap-14">
           {(Object.keys(GRUPOS) as ModuleGroup[]).map((g) => {
@@ -61,6 +61,7 @@ export function Servicios() {
         </div>
       </main>
       <SiteFooter />
+      <ContactDock />
     </div>
   );
 }

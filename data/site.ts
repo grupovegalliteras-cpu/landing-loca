@@ -10,3 +10,9 @@ export const CONTACTO = {
 export function whatsappLink(texto: string) {
   return `https://wa.me/${CONTACTO.whatsapp}?text=${encodeURIComponent(texto)}`;
 }
+
+/** Dirección pública de la web, para las vistas previas de WhatsApp y el sitemap. */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")
+).replace(/\/$/, "");

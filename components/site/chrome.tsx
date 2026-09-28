@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, MessageCircle, X } from "lucide-react";
+import { Menu, MessageCircle, PlayCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { CONTACTO, whatsappLink } from "@/data/site";
@@ -67,6 +67,12 @@ export function SiteNav({ dark = false }: { dark?: boolean }) {
                 </Link>
               ))}
             </nav>
+            <div className="absolute inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] grid gap-2">
+              <a href={whatsappLink(WA_HOLA)} target="_blank" rel="noreferrer" className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-[#1faa59] text-[16px] font-semibold text-white">
+                <MessageCircle className="size-5" /> Escríbenos por WhatsApp
+              </a>
+              <div className="text-center text-[13px] text-fg-3">{CONTACTO.whatsappVisible} · {CONTACTO.ciudad}</div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -74,14 +80,79 @@ export function SiteNav({ dark = false }: { dark?: boolean }) {
   );
 }
 
+export const WA_HOLA = "Hola, he visto la demo de Nexo4Pymes y me gustaría verla con los datos de mi empresa.";
+
+/**
+ * Acceso fijo a la demo y a WhatsApp. En móvil es una barra abajo, al alcance del pulgar;
+ * en escritorio, un botón flotante. Aparece al bajar y se aparta al llegar al formulario.
+ */
+export function ContactDock({ demoHref = "/demo?tour=1", mensaje = WA_HOLA }: { demoHref?: string; mensaje?: string }) {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const contacto = document.getElementById("contacto");
+    let inContact = false;
+    const upd = () => setShow(window.scrollY > 520 && !inContact);
+    const io = contacto
+      ? new IntersectionObserver(([e]) => {
+          inContact = e.isIntersecting;
+          upd();
+        })
+      : null;
+    if (contacto) io!.observe(contacto);
+    upd();
+    window.addEventListener("scroll", upd, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", upd);
+      io?.disconnect();
+    };
+  }, []);
+  return (
+    <AnimatePresence>
+      {show && (
+        <>
+          <motion.div
+            key="bar"
+            initial={{ y: "110%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "110%" }}
+            transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/90 px-3 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden"
+          >
+            <div className="mx-auto flex max-w-md gap-2">
+              <Link href={demoHref} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-fg text-[15px] font-semibold text-bg">
+                <PlayCircle className="size-5" /> Ver la demo
+              </Link>
+              <a href={whatsappLink(mensaje)} target="_blank" rel="noreferrer" className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[#1faa59] text-[15px] font-semibold text-white">
+                <MessageCircle className="size-5" /> WhatsApp
+              </a>
+            </div>
+          </motion.div>
+          <motion.a
+            key="fab"
+            href={whatsappLink(mensaje)}
+            target="_blank"
+            rel="noreferrer"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed right-6 bottom-6 z-40 hidden h-12 items-center gap-2 rounded-full bg-[#1faa59] pr-5 pl-4 text-[15px] font-semibold text-white shadow-e3 transition hover:brightness-110 lg:flex"
+          >
+            <MessageCircle className="size-5" /> ¿Hablamos?
+          </motion.a>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-surface">
+    <footer className="border-t border-line bg-surface pb-20 lg:pb-0">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Logo className="h-7 text-[17px]" />
           <p className="mt-3 max-w-xs text-[14px] text-fg-2">Paneles de gestión y apps para empresas de servicios, con automatización e inteligencia artificial. Desde {CONTACTO.ciudad}.</p>
-          <a href={whatsappLink("Hola, he visto la demo de Nexo4Pymes y me gustaría verla con los datos de mi empresa.")} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-[14px] font-medium hover:bg-surface-2">
+          <a href={whatsappLink(WA_HOLA)} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-[14px] font-medium hover:bg-surface-2">
             <MessageCircle className="size-4 text-ok" /> WhatsApp {CONTACTO.whatsappVisible}
           </a>
         </div>
@@ -108,6 +179,9 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-2 px-4 py-4 text-[12px] text-fg-3 sm:px-6">
           <span>Nexo4Pymes, {CONTACTO.ciudad}</span>
           <span>Todas las empresas, personas y cifras de esta demo son ficticias.</span>
+          <Link href="/privacidad" className="hover:text-fg">
+            Privacidad
+          </Link>
         </div>
       </div>
     </footer>

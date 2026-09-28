@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Check, PhoneIncoming, PlayCircle, Smartphone } from "lucide-react";
+import { Check, MessageCircle, PhoneIncoming, PlayCircle, Smartphone } from "lucide-react";
+import { whatsappLink } from "@/data/site";
 import { useEffect } from "react";
 import { SECTOR_POR_ID, SECTORES, type SectorId } from "@/data/sectors";
 import { useDemo } from "@/store/demo";
@@ -10,7 +11,7 @@ import { useHydrated } from "@/components/providers";
 import { fmt } from "@/lib/utils";
 import { Icon } from "@/components/icon";
 import { Caustics } from "./caustics";
-import { SiteFooter, SiteNav } from "./chrome";
+import { ContactDock, SiteFooter, SiteNav } from "./chrome";
 import { HeroAnim } from "./hero-anim";
 
 export function SectorPage({ id }: { id: SectorId }) {
@@ -18,6 +19,7 @@ export function SectorPage({ id }: { id: SectorId }) {
   const hydrated = useHydrated();
   const current = useDemo((st) => st.sector);
   const setSector = useDemo((st) => st.setSector);
+  const mensaje = `Hola, tengo una empresa de ${s.nombre.toLowerCase()} y he visto vuestra demo. Me gustaría verla con los datos de mi empresa.`;
   useEffect(() => {
     if (hydrated && current !== id) setSector(id);
   }, [hydrated, current, id, setSector]);
@@ -28,31 +30,31 @@ export function SectorPage({ id }: { id: SectorId }) {
       <section className="relative overflow-hidden bg-[#041820] text-white">
         <div className="absolute inset-0">
           <Caustics />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(4_24_32/0.92),rgb(4_24_32/0.3))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(4_24_32/0.55),rgb(4_24_32/0.9))] lg:bg-[linear-gradient(90deg,rgb(4_24_32/0.92),rgb(4_24_32/0.3))]" />
         </div>
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pt-28 pb-16 sm:px-6 lg:grid-cols-2">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pt-24 pb-14 sm:px-6 sm:pt-28 lg:grid-cols-2 lg:gap-10">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-[13px] text-white/75">
               <Icon name={s.icono} className="size-4" /> {s.nombre}
             </div>
-            <h1 className="mt-5 font-display text-[40px] leading-[1.05] font-semibold tracking-tight sm:text-[56px]">
+            <h1 className="mt-5 font-display text-[36px] leading-[1.05] font-semibold tracking-tight min-[400px]:text-[40px] sm:text-[56px]">
               Tu empresa de {s.nombre.toLowerCase()}, sin papeles ni llamadas perdidas
             </h1>
-            <p className="mt-4 max-w-xl text-[17px] text-white/70">{s.dolor} Así lo resolvemos para empresas como la tuya.</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={`/demo?sector=${s.id}&tour=1`} className="flex h-12 items-center gap-2 rounded-xl bg-sun px-5 text-[15px] font-semibold text-[#1d1300]">
-                <PlayCircle className="size-5" /> Ver la demo de {s.empresa}
+            <p className="mt-4 max-w-xl text-[16px] text-white/70 sm:text-[17px]">{s.dolor} Así lo resolvemos para empresas como la tuya.</p>
+            <div className="mt-7 grid gap-3 sm:mt-8 sm:flex sm:flex-wrap">
+              <Link href={`/demo?sector=${s.id}&tour=1`} className="flex h-13 items-center justify-center gap-2 rounded-xl bg-sun px-5 text-[16px] font-semibold text-[#1d1300] sm:h-12 sm:text-[15px]">
+                <PlayCircle className="size-5" /> Ver la demo<span className="max-sm:hidden"> de {s.empresa}</span><span className="sm:hidden"> en vivo</span>
               </Link>
-              <Link href="/#contacto" className="flex h-12 items-center rounded-xl border border-white/20 px-5 text-[15px] font-medium hover:bg-white/10">
-                Pide la tuya
-              </Link>
+              <a href={whatsappLink(mensaje)} target="_blank" rel="noreferrer" className="flex h-13 items-center justify-center gap-2 rounded-xl border border-white/20 px-5 text-[16px] font-medium hover:bg-white/10 sm:h-12 sm:text-[15px]">
+                <MessageCircle className="size-5 text-[#5ee39a]" /> Pide la tuya por WhatsApp
+              </a>
             </div>
           </div>
           <HeroAnim />
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+      <section className="mx-auto max-w-7xl px-5 py-14 sm:px-6 sm:py-20">
         <div className="grid gap-6 lg:grid-cols-3">
           <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-2xl border border-line bg-surface p-6">
             <div className="flex items-center gap-2 text-[13px] font-semibold text-sun">
@@ -112,6 +114,7 @@ export function SectorPage({ id }: { id: SectorId }) {
         </div>
       </section>
       <SiteFooter />
+      <ContactDock demoHref={`/demo?sector=${s.id}&tour=1`} mensaje={mensaje} />
     </div>
   );
 }

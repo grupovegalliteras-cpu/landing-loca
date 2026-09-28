@@ -1,11 +1,12 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronLeft, ChevronRight, Pause, Play, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle, Pause, Play, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LIVE_SPEED, useDemo } from "@/store/demo";
 import { useUi, type AppRoute } from "@/store/ui";
 import { SECTOR_POR_ID } from "@/data/sectors";
+import { whatsappLink } from "@/data/site";
 import { addDays, cn, isoDay } from "@/lib/utils";
 
 type Ctx = { avisoId?: string; jobId?: string; invoiceId?: string; absenceId?: string };
@@ -13,6 +14,8 @@ export type TourStep = {
   title: string;
   text: string;
   side: "panel" | "app" | "both";
+  /** En móvil solo cabe una pantalla: cuál enseñar en los pasos «both» */
+  mobile?: "panel" | "app";
   panel?: string;
   app?: (c: Ctx) => AppRoute;
   spotlight?: string;
@@ -58,6 +61,7 @@ export const STEPS: TourStep[] = [
     title: "Un clic y el técnico lo tiene en el móvil",
     text: "La oficina crea la orden de trabajo con el técnico recomendado. Al instante le llega la notificación con todos los datos.",
     side: "both",
+    mobile: "app",
     panel: "central-avisos",
     app: () => ({ screen: "hoy" }),
     spotlight: "app-banner",
@@ -74,6 +78,7 @@ export const STEPS: TourStep[] = [
     title: "Ficha desde el móvil",
     text: "El técnico ficha la entrada con su ubicación. En la oficina el panel del equipo se actualiza solo, y queda el registro de jornada.",
     side: "both",
+    mobile: "panel",
     panel: "fichaje",
     app: () => ({ screen: "hoy" }),
     spotlight: "fichaje-board",
@@ -87,6 +92,7 @@ export const STEPS: TourStep[] = [
     title: "Sale hacia el cliente",
     text: "Pulsa «Salgo hacia allí» y el cliente recibe un aviso. En la oficina, el mapa y la planificación cambian de estado en directo.",
     side: "both",
+    mobile: "app",
     panel: "rutas",
     app: (c) => ({ screen: "trabajo", params: { id: c.jobId ?? "" } }),
     duration: () => 6000,
@@ -112,6 +118,7 @@ export const STEPS: TourStep[] = [
     title: "Cierra el parte y la oficina lo tiene todo",
     text: "Informe en PDF enviado al cliente, material descontado del stock y la factura preparada en borrador. Sin pasar nada a mano.",
     side: "both",
+    mobile: "panel",
     panel: "facturacion",
     app: (c) => ({ screen: "parte", params: { id: c.jobId ?? "" } }),
     duration: () => 6500,
@@ -152,6 +159,7 @@ export const STEPS: TourStep[] = [
     title: "Y el equipo, sin papeles",
     text: "El técnico pide vacaciones desde la app. La oficina las ve al momento en el calendario del equipo.",
     side: "both",
+    mobile: "panel",
     panel: "vacaciones",
     app: () => ({ screen: "vacaciones" }),
     spotlight: "vacaciones-pendientes",
@@ -165,6 +173,7 @@ export const STEPS: TourStep[] = [
     title: "Aprobadas, y le llega el aviso",
     text: "Un clic en la oficina y el técnico recibe la respuesta en el móvil. Lo mismo con nóminas, comunicados y documentos.",
     side: "both",
+    mobile: "app",
     panel: "vacaciones",
     app: () => ({ screen: "vacaciones" }),
     spotlight: "app-banner",
@@ -175,7 +184,7 @@ export const STEPS: TourStep[] = [
   },
 ];
 
-export function useTour(onView?: (side: "panel" | "app" | "both") => void) {
+export function useTour(onView?: (side: "panel" | "app") => void) {
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -193,7 +202,7 @@ export function useTour(onView?: (side: "panel" | "app" | "both") => void) {
       if (!s) return;
       if (s.panel) ui().setPanelSection(s.panel);
       if (s.app) ui().appReset(s.app(ctx.current));
-      onView?.(s.side);
+      onView?.(s.mobile ?? (s.side === "both" ? "panel" : s.side));
       if (!ran.current.has(i)) {
         ran.current.add(i);
         s.run?.(ctx.current);
@@ -306,14 +315,14 @@ function TourProgress({ t }: { t: ReturnType<typeof useTour> }) {
   );
 }
 
-export function TourCard({ t, onCta }: { t: ReturnType<typeof useTour>; onCta: () => void }) {
+export function TourCard({ t }: { t: ReturnType<typeof useTour> }) {
   if (!t.active) return null;
   const s = STEPS[t.step];
   const end = t.step >= STEPS.length;
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-auto w-[min(440px,calc(100vw-24px))] overflow-hidden rounded-2xl border border-white/10 bg-[#0c1a22]/95 text-white shadow-e3 backdrop-blur-xl" role="region" aria-label="Recorrido guiado">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-auto w-full overflow-hidden rounded-2xl lg:w-[440px] border border-white/10 bg-[#0c1a22]/95 text-white shadow-e3 backdrop-blur-xl" role="region" aria-label="Recorrido guiado">
       {!end && <TourProgress t={t} />}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="flex items-center justify-between text-xs text-white/50">
           <span className="tabular">{end ? "Fin del recorrido" : `Paso ${t.step + 1} de ${STEPS.length}`}</span>
           <button onClick={t.stop} className="grid size-6 place-items-center rounded-md hover:bg-white/10" aria-label="Cerrar recorrido">
@@ -324,40 +333,40 @@ export function TourCard({ t, onCta }: { t: ReturnType<typeof useTour>; onCta: (
           <motion.div key={t.step} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25 }}>
             {end ? (
               <>
-                <div className="mt-1 font-display text-xl font-semibold">De la llamada a la factura cobrada, sin papeles</div>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-white/75">Esto es lo que hace tu equipo cada día, pero sin apuntar, sin llamar para preguntar y sin pasar nada a mano. Lo montamos con los datos de tu empresa.</p>
+                <div className="mt-0.5 font-display text-lg font-semibold sm:mt-1 sm:text-xl">De la llamada a la factura cobrada, sin papeles</div>
+                <p className="mt-1 text-[13px] leading-snug text-white/75 sm:mt-1.5 sm:text-[14px] sm:leading-relaxed">Esto es lo que hace tu equipo cada día, pero sin apuntar, sin llamar para preguntar y sin pasar nada a mano. Lo montamos con los datos de tu empresa.</p>
               </>
             ) : (
               <>
-                <div className="mt-1 font-display text-xl font-semibold">{s.title}</div>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-white/75">{s.text}</p>
+                <div className="mt-0.5 font-display text-lg leading-tight font-semibold sm:mt-1 sm:text-xl">{s.title}</div>
+                <p className="mt-1 text-[13px] leading-snug text-white/75 sm:mt-1.5 sm:text-[14px] sm:leading-relaxed">{s.text}</p>
               </>
             )}
           </motion.div>
         </AnimatePresence>
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-3 flex items-center gap-2 sm:mt-4">
           {end ? (
             <>
-              <button onClick={t.start} className="h-9 rounded-lg px-3 text-[13px] text-white/80 hover:bg-white/10">
+              <button onClick={t.start} className="h-10 rounded-lg px-3 text-[13px] text-white/80 hover:bg-white/10">
                 Ver otra vez
               </button>
-              <button onClick={onCta} className="ml-auto h-9 rounded-lg bg-sun px-4 text-[13px] font-semibold text-[#1d1300]">
-                Pide tu demo con tus datos
-              </button>
+              <a href={whatsappLink("Hola, he visto el recorrido de la demo de Nexo4Pymes y me gustaría verla con los datos de mi empresa.")} target="_blank" rel="noreferrer" className="ml-auto flex h-10 items-center gap-2 rounded-lg bg-sun px-4 text-[14px] font-semibold text-[#1d1300]">
+                <MessageCircle className="size-4" /> La quiero con mis datos
+              </a>
             </>
           ) : (
             <>
-              <button onClick={() => t.go(t.step - 1)} disabled={t.step === 0} className="grid size-9 place-items-center rounded-lg hover:bg-white/10 disabled:opacity-30" aria-label="Paso anterior">
+              <button onClick={() => t.go(t.step - 1)} disabled={t.step === 0} className="grid size-10 place-items-center rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30" aria-label="Paso anterior">
                 <ChevronLeft className="size-4" />
               </button>
-              <button onClick={() => t.setPlaying(!t.playing)} className="flex h-9 items-center gap-1.5 rounded-lg bg-white/10 px-3 text-[13px] font-medium hover:bg-white/15" aria-label={t.playing ? "Pausar" : "Reanudar"}>
+              <button onClick={() => t.setPlaying(!t.playing)} className="flex h-10 items-center gap-1.5 rounded-lg bg-white/10 px-3 text-[13px] font-medium hover:bg-white/15" aria-label={t.playing ? "Pausar" : "Reanudar"}>
                 {t.playing ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
                 {t.playing ? "Pausar" : "Seguir"}
               </button>
-              <button onClick={() => t.go(t.step + 1)} className="flex h-9 items-center gap-1 rounded-lg px-3 text-[13px] font-medium hover:bg-white/10" aria-label="Paso siguiente">
+              <button onClick={() => t.go(t.step + 1)} className="flex h-10 items-center gap-1 rounded-lg bg-white text-[#0c1a22] px-3 text-[13px] font-semibold hover:bg-white/90 max-lg:ml-auto" aria-label="Paso siguiente">
                 Siguiente <ChevronRight className="size-4" />
               </button>
-              <span className="ml-auto hidden text-[11px] text-white/40 sm:inline">Espacio para pausar</span>
+              <span className="ml-auto hidden text-[11px] text-white/40 lg:inline">Espacio para pausar</span>
             </>
           )}
         </div>

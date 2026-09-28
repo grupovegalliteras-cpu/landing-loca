@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  BadgeCheck, Bell, Check, ChevronDown, ClipboardCheck, FileSignature, Mail, MessageCircle, Navigation, PhoneIncoming, PlayCircle, Receipt, Smartphone, Sparkles, Wallet, Wrench,
+  BadgeCheck, Bell, Check, ChevronDown, ClipboardCheck, FileSignature, Mail, MessageCircle, Monitor, Navigation, PhoneIncoming, PlayCircle, Receipt, Sparkles, Wallet, Wrench,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { GRUPOS, MODULOS, type ModuleGroup } from "@/data/modules";
@@ -17,7 +17,7 @@ import { PanelShell } from "@/components/panel/shell";
 import { AppShell, PhoneFrame } from "@/components/app/shell";
 import { Caustics } from "./caustics";
 import { HeroAnim } from "./hero-anim";
-import { SiteFooter, SiteNav } from "./chrome";
+import { ContactDock, SiteFooter, SiteNav, WA_HOLA } from "./chrome";
 
 export function Landing() {
   return (
@@ -27,11 +27,13 @@ export function Landing() {
       <SectorPicker />
       <Recorrido />
       <SoftwareReal />
+      <Calculadora />
       <Modulos />
       <Como />
       <Faq />
       <Contacto />
       <SiteFooter />
+      <ContactDock />
     </div>
   );
 }
@@ -42,32 +44,33 @@ function Hero() {
     <section className="relative overflow-hidden bg-[#041820] text-white">
       <div className="absolute inset-0">
         <Caustics />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(4_24_32/0.92)_0%,rgb(4_24_32/0.55)_45%,rgb(4_24_32/0.15)_100%)]" />
+        {/* en móvil el texto ocupa todo el ancho: velo vertical; en escritorio, de izquierda a derecha */}
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(4_24_32/0.5)_0%,rgb(4_24_32/0.78)_45%,rgb(4_24_32/0.92)_100%)] lg:bg-[linear-gradient(90deg,rgb(4_24_32/0.92)_0%,rgb(4_24_32/0.55)_45%,rgb(4_24_32/0.15)_100%)]" />
         <div className="grain absolute inset-0 opacity-[0.07] mix-blend-overlay" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#041820]" />
       </div>
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pt-28 pb-16 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:pt-32 lg:pb-24">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pt-24 pb-14 sm:px-6 sm:pt-28 lg:grid-cols-[1fr_1.05fr] lg:gap-10 lg:pt-32 lg:pb-24">
         <div>
-          <div className="fade-up inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[13px] text-white/80 backdrop-blur">
+          <div className="fade-up inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[12px] text-white/80 backdrop-blur sm:text-[13px]">
             <span className="size-1.5 rounded-full bg-sun" /> Panel de oficina y app de técnicos, conectados
           </div>
-          <h1 className="fade-up mt-5 font-display text-[44px] leading-[1.02] font-semibold tracking-[-0.03em] sm:text-[60px] lg:text-[64px]" style={{ animationDelay: "80ms" }}>
+          <h1 className="fade-up mt-5 font-display text-[42px] leading-[1.02] font-semibold tracking-[-0.03em] min-[400px]:text-[46px] sm:text-[60px] lg:text-[64px]" style={{ animationDelay: "80ms" }}>
             La llamada entra.
             <br />
             <span className="text-[#8fd9ea]">El trabajo sale solo.</span>
           </h1>
-          <p className="fade-up mt-5 max-w-xl text-[17px] leading-relaxed text-white/75 sm:text-[18px]" style={{ animationDelay: "160ms" }}>
+          <p className="fade-up mt-4 max-w-xl text-[16px] leading-relaxed text-white/75 sm:mt-5 sm:text-[18px]" style={{ animationDelay: "160ms" }}>
             Recogemos cada llamada y cada WhatsApp de tus clientes, los convertimos en órdenes de trabajo y los mandamos al móvil de tus técnicos. Parte, fotos, firma, factura con VeriFactu y cobro, sin pasar nada a mano.
           </p>
-          <div className="fade-up mt-8 flex flex-wrap gap-3" style={{ animationDelay: "240ms" }}>
-            <Link href="/demo?tour=1" className="group flex h-12 items-center gap-2 rounded-xl bg-sun px-5 text-[15px] font-semibold text-[#1d1300] shadow-[0_10px_30px_-10px_rgb(245_171_46/0.7)] transition hover:brightness-105">
+          <div className="fade-up mt-7 grid gap-3 sm:mt-8 sm:flex sm:flex-wrap" style={{ animationDelay: "240ms" }}>
+            <Link href="/demo?tour=1" className="group flex h-13 items-center justify-center gap-2 rounded-xl bg-sun px-5 text-[16px] font-semibold sm:h-12 sm:text-[15px] text-[#1d1300] shadow-[0_10px_30px_-10px_rgb(245_171_46/0.7)] transition hover:brightness-105">
               <PlayCircle className="size-5" /> Ver la demo en vivo
             </Link>
-            <Link href="/#contacto" className="flex h-12 items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 text-[15px] font-medium text-white backdrop-blur transition hover:bg-white/10">
-              Pide tu demo con tus datos
-            </Link>
+            <a href={whatsappLink(WA_HOLA)} target="_blank" rel="noreferrer" className="flex h-13 items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 text-[16px] font-medium text-white backdrop-blur transition hover:bg-white/10 sm:h-12 sm:text-[15px]">
+              <MessageCircle className="size-5 text-[#5ee39a]" /> Escríbenos por WhatsApp
+            </a>
           </div>
-          <div className="fade-up mt-10 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-white/60" style={{ animationDelay: "400ms" }}>
+          <div className="fade-up mt-8 grid grid-cols-2 gap-x-4 gap-y-2 text-[13px] text-white/65 sm:mt-10 sm:flex sm:flex-wrap sm:gap-x-6" style={{ animationDelay: "400ms" }}>
             {["Sin cambiar de número", "Funciona sin cobertura", "Datos en la UE", "Hecho en Mallorca"].map((t) => (
               <span key={t} className="flex items-center gap-1.5">
                 <Check className="size-3.5 text-[#7fe3b8]" /> {t}
@@ -87,15 +90,15 @@ function SectorPicker() {
   const setSector = useDemo((s) => s.setSector);
   return (
     <section id="sectores" className="relative scroll-mt-20 bg-[#041820] pb-20 text-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur sm:p-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="font-display text-[28px] font-semibold tracking-tight sm:text-[34px]">Elige tu sector y mira la demo con tu día a día</h2>
+              <h2 className="font-display text-[26px] leading-tight font-semibold tracking-tight sm:text-[34px]">Elige tu sector y mira la demo con tu día a día</h2>
               <p className="mt-1 text-white/60">La demo cambia la empresa, los servicios, los checklists, las mediciones y los avisos.</p>
             </div>
           </div>
-          <div className="mt-6 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <div className="-mx-5 mt-6 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar [mask-image:linear-gradient(90deg,transparent,#000_20px,#000_calc(100%-40px),transparent)] sm:mx-0 sm:px-0 sm:[mask-image:none]">
             {SECTORES.map((s) => (
               <button
                 key={s.id}
@@ -126,7 +129,7 @@ function SectorPicker() {
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   <Link href={`/demo?sector=${sector.id}&tour=1`} className="flex h-10 items-center gap-2 rounded-lg bg-white px-4 text-[14px] font-semibold text-[#041820]">
-                    <PlayCircle className="size-4" /> Ver la demo de {sector.nombre.toLowerCase()}
+                    <PlayCircle className="size-4" /> Ver la demo<span className="max-sm:hidden"> de {sector.nombre.toLowerCase()}</span>
                   </Link>
                   <Link href={`/sectores/${sector.id}`} className="flex h-10 items-center rounded-lg border border-white/20 px-4 text-[14px] font-medium hover:bg-white/10">
                     Más sobre el sector
@@ -189,10 +192,10 @@ const PASOS: { h: string; t: string; d: string; icon: ReactNode; href: string; t
 
 function Recorrido() {
   return (
-    <section id="recorrido" className="scroll-mt-20 py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="recorrido" className="scroll-mt-20 py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="max-w-2xl">
-          <h2 className="font-display text-[34px] leading-tight font-semibold tracking-tight sm:text-[44px]">Un día cualquiera, de la llamada a la factura cobrada</h2>
+          <h2 className="font-display text-[30px] leading-tight font-semibold tracking-tight sm:text-[44px]">Un día cualquiera, de la llamada a la factura cobrada</h2>
           <p className="mt-3 text-[17px] text-fg-2">Cada paso es una pantalla real de la demo. Pulsa en cualquiera para verla.</p>
         </div>
         <div className="relative mt-14">
@@ -255,49 +258,165 @@ function ScaledPanel() {
   );
 }
 
+function useWide() {
+  const [wide, setWide] = useState<boolean | null>(null);
+  const [vw, setVw] = useState(375);
+  useEffect(() => {
+    const f = () => {
+      setWide(window.innerWidth >= 1024);
+      setVw(window.innerWidth);
+    };
+    f();
+    window.addEventListener("resize", f);
+    return () => window.removeEventListener("resize", f);
+  }, []);
+  return { wide, vw };
+}
+
 function SoftwareReal() {
+  const { wide, vw } = useWide();
   useEffect(() => {
     useUi.getState().setPanelSection("direccion");
   }, []);
   return (
-    <section className="relative overflow-hidden bg-surface-2/60 py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section className="relative overflow-hidden bg-surface-2/60 py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-2xl">
-            <h2 className="font-display text-[34px] leading-tight font-semibold tracking-tight sm:text-[44px]">No es una maqueta. Tócalo.</h2>
-            <p className="mt-3 text-[17px] text-fg-2">Esto que ves abajo es el panel de oficina funcionando, con datos de ejemplo. Navega, abre fichas, emite una factura. Y el móvil del técnico está conectado.</p>
+            <h2 className="font-display text-[30px] leading-tight font-semibold tracking-tight sm:text-[44px]">No es una maqueta. Tócalo.</h2>
+            <p className="mt-3 text-[16px] text-fg-2 sm:text-[17px]">
+              <span className="lg:hidden">Esta es la app que llevarían tus técnicos, funcionando con datos de ejemplo. Toca un trabajo, ficha o abre el menú Más.</span>
+              <span className="max-lg:hidden">Esto que ves abajo es el panel de oficina funcionando, con datos de ejemplo. Navega, abre fichas, emite una factura. Y el móvil del técnico está conectado.</span>
+            </p>
           </div>
-          <Link href="/demo" className="flex h-11 items-center gap-2 rounded-xl bg-fg px-4 text-[14px] font-semibold text-bg">
+          <Link href="/demo" className="hidden h-11 items-center gap-2 rounded-xl bg-fg px-4 text-[14px] font-semibold text-bg lg:flex">
             Abrir a pantalla completa
           </Link>
         </div>
-        <div className="mt-10 grid items-end gap-6 lg:grid-cols-[1fr_auto]">
-          <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-e3">
-            <div className="flex h-9 items-center gap-2 border-b border-line bg-surface px-3">
-              <span className="flex gap-1.5">
-                <span className="size-2.5 rounded-full bg-[#ff5f57]" />
-                <span className="size-2.5 rounded-full bg-[#febc2e]" />
-                <span className="size-2.5 rounded-full bg-[#28c840]" />
-              </span>
-              <span className="mx-auto rounded-md bg-surface-2 px-3 py-0.5 text-[11px] text-fg-3">panel.nexo4pymes.com</span>
+        {wide === true && (
+          <div className="mt-10 grid items-end gap-6 lg:grid-cols-[1fr_auto]">
+            <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-e3">
+              <div className="flex h-9 items-center gap-2 border-b border-line bg-surface px-3">
+                <span className="flex gap-1.5">
+                  <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+                  <span className="size-2.5 rounded-full bg-[#febc2e]" />
+                  <span className="size-2.5 rounded-full bg-[#28c840]" />
+                </span>
+                <span className="mx-auto rounded-md bg-surface-2 px-3 py-0.5 text-[11px] text-fg-3">panel.nexo4pymes.com</span>
+              </div>
+              <ScaledPanel />
             </div>
-            <ScaledPanel />
+            <div className="flex justify-center">
+              <PhoneFrame scale={0.72}>
+                <AppShell />
+              </PhoneFrame>
+            </div>
           </div>
-          <div className="hidden justify-center lg:flex">
-            <PhoneFrame scale={0.72}>
-              <AppShell />
-            </PhoneFrame>
+        )}
+        {wide === false && (
+          <>
+            {/* en el móvil el panel de 1280 px no se lee: se enseña la app, que es nativa de esta pantalla */}
+            <div className="mt-8 flex justify-center">
+              <PhoneFrame scale={Math.min(0.86, (vw - 40) / 390)}>
+                <AppShell />
+              </PhoneFrame>
+            </div>
+            <div className="mx-auto mt-6 grid max-w-md gap-2">
+              <Link href="/demo?tour=1" className="flex h-12 items-center justify-center gap-2 rounded-xl bg-fg text-[15px] font-semibold text-bg">
+                <PlayCircle className="size-5" /> Ver oficina y móvil conectados
+              </Link>
+              <Link href="/panel" className="flex h-12 items-center justify-center gap-2 rounded-xl border border-line bg-surface text-[15px] font-medium">
+                <Monitor className="size-5 text-brand" /> Abrir el panel de oficina
+              </Link>
+            </div>
+          </>
+        )}
+        {wide === null && <div className="mt-8 h-[640px]" />}
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- Calculadora ---------------- */
+function Rango({ label, value, min, max, onChange, fmtv }: { label: string; value: number; min: number; max: number; onChange: (v: number) => void; fmtv: (v: number) => string }) {
+  return (
+    <label className="grid gap-1.5">
+      <span className="flex items-baseline justify-between gap-3 text-[14px]">
+        <span className="text-fg-2">{label}</span>
+        <span className="font-display text-[20px] font-semibold tabular">{fmtv(value)}</span>
+      </span>
+      <input type="range" min={min} max={max} value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-8 w-full cursor-pointer accent-[var(--sun)]" />
+    </label>
+  );
+}
+
+const DIAS_MES = 21;
+
+function Calculadora() {
+  const [tec, setTec] = useState(4);
+  const [trab, setTrab] = useState(4);
+  const [min, setMin] = useState(15);
+  const [coste, setCoste] = useState(22);
+  const horas = (tec * trab * min * DIAS_MES) / 60;
+  const euros = horas * coste;
+  const msg = `Hola, he hecho el cálculo en vuestra web: somos ${tec} técnicos, con unos ${trab} trabajos al día cada uno, y se nos van unas ${fmt.num(horas, 0)} horas al mes en papeleo. Me gustaría ver cómo lo reduciríais.`;
+  return (
+    <section id="calculadora" className="scroll-mt-20 py-16 sm:py-24">
+      <div className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-2 lg:gap-12">
+        <div>
+          <h2 className="font-display text-[30px] leading-tight font-semibold tracking-tight sm:text-[44px]">¿Cuánto tiempo se os va en papeles?</h2>
+          <p className="mt-3 text-[16px] text-fg-2 sm:text-[17px]">Apuntar el aviso, llamar al técnico, pasar el parte a limpio, hacer la factura. Mueve los valores con los números de tu empresa.</p>
+          <div className="mt-8 grid gap-5 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+            <Rango label="Técnicos en campo" value={tec} min={1} max={30} onChange={setTec} fmtv={(v) => String(v)} />
+            <Rango label="Trabajos al día por técnico" value={trab} min={1} max={12} onChange={setTrab} fmtv={(v) => String(v)} />
+            <Rango label="Minutos de papeleo por trabajo" value={min} min={5} max={45} onChange={setMin} fmtv={(v) => `${v} min`} />
+            <Rango label="Coste de una hora de oficina" value={coste} min={12} max={45} onChange={setCoste} fmtv={(v) => `${v} €`} />
           </div>
         </div>
-        <div className="mt-6 flex items-center gap-2 text-[13px] text-fg-3 lg:hidden">
-          <Smartphone className="size-4" /> La app del técnico se ve mejor en{" "}
-          <Link href="/app" className="text-brand underline">
-            su propia pantalla
-          </Link>
+        <div className="flex flex-col justify-center rounded-3xl bg-[#041820] p-6 text-white ring-1 ring-white/10 sm:p-8">
+          <div className="text-[14px] text-white/60">Con tus números, cada mes se van en papeleo</div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <AnimatedCounter value={horas} className="font-display text-[64px] leading-none font-semibold tracking-tight sm:text-[84px]" />
+            <span className="font-display text-[24px] font-semibold text-white/70">horas</span>
+          </div>
+          <div className="mt-3 text-[17px] text-white/80">
+            Unos <span className="font-semibold text-sun tabular">{fmt.eur0(euros)}</span> al mes en tiempo de oficina, o <span className="tabular">{fmt.num(horas / 8, 0)}</span> jornadas completas.
+          </div>
+          <div className="mt-6 grid gap-2 text-[14px] text-white/70">
+            {["El aviso entra ya clasificado, sin apuntarlo", "El parte llega del móvil con fotos y firma", "La factura sale del parte, sin teclearla"].map((t) => (
+              <div key={t} className="flex items-center gap-2">
+                <Check className="size-4 shrink-0 text-[#7fe3b8]" /> {t}
+              </div>
+            ))}
+          </div>
+          <a href={whatsappLink(msg)} target="_blank" rel="noreferrer" className="mt-7 flex h-12 items-center justify-center gap-2 rounded-xl bg-sun text-[15px] font-semibold text-[#1d1300] hover:brightness-105">
+            <MessageCircle className="size-5" /> Envíanos tu cálculo por WhatsApp
+          </a>
+          <p className="mt-3 text-[12px] text-white/45">Estimación orientativa hecha con tus datos y {DIAS_MES} días laborables al mes. En el diagnóstico lo medimos de verdad.</p>
         </div>
       </div>
     </section>
   );
+}
+
+function AnimatedCounter({ value, className }: { value: number; className?: string }) {
+  const [shown, setShown] = useState(value);
+  const from = useRef(value);
+  useEffect(() => {
+    const start = performance.now();
+    const a = from.current;
+    let raf = 0;
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - start) / 350);
+      const v = a + (value - a) * (1 - Math.pow(1 - k, 3));
+      setShown(v);
+      from.current = v;
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <span className={cn("tabular", className)}>{fmt.num(shown, 0)}</span>;
 }
 
 /* ---------------- Módulos ---------------- */
@@ -305,10 +424,10 @@ function Modulos() {
   const groups = Object.keys(GRUPOS) as ModuleGroup[];
   const showEstado = useUi((s) => s.showEstado);
   return (
-    <section id="modulos" className="scroll-mt-20 py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <section id="modulos" className="scroll-mt-20 py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className="max-w-2xl">
-          <h2 className="font-display text-[34px] leading-tight font-semibold tracking-tight sm:text-[44px]">Empieza por lo que más te duele. Añade el resto cuando quieras.</h2>
+          <h2 className="font-display text-[30px] leading-tight font-semibold tracking-tight sm:text-[44px]">Empieza por lo que más te duele. Añade el resto cuando quieras.</h2>
           <p className="mt-3 text-[17px] text-fg-2">{MODULOS.length} módulos que encajan entre sí. Cada uno tiene su pantalla en la demo.</p>
         </div>
 
@@ -367,9 +486,9 @@ function Como() {
     { n: "3", t: "Ampliación por módulos", d: "Cuando lo primero ya funciona, sumamos lo siguiente: facturación, fichaje, almacén… Sin cambiar de sistema cada vez." },
   ];
   return (
-    <section id="como" className="scroll-mt-20 bg-[#041820] py-24 text-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <h2 className="max-w-2xl font-display text-[34px] leading-tight font-semibold tracking-tight sm:text-[44px]">Cómo trabajamos</h2>
+    <section id="como" className="scroll-mt-20 bg-[#041820] py-16 text-white sm:py-24">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
+        <h2 className="max-w-2xl font-display text-[30px] leading-tight font-semibold tracking-tight sm:text-[44px]">Cómo trabajamos</h2>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {pasos.map((p, i) => (
             <motion.div key={p.n} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="relative">
@@ -398,10 +517,10 @@ const FAQ = [
 function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="preguntas" className="scroll-mt-20 py-24">
+    <section id="preguntas" className="scroll-mt-20 py-16 sm:py-24">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
         <div>
-          <h2 className="font-display text-[34px] leading-tight font-semibold tracking-tight sm:text-[44px]">Preguntas que nos hacen siempre</h2>
+          <h2 className="font-display text-[30px] leading-tight font-semibold tracking-tight sm:text-[44px]">Preguntas que nos hacen siempre</h2>
           <p className="mt-3 text-[17px] text-fg-2">Respuestas claras. Si falta la tuya, escríbenos.</p>
         </div>
         <div className="divide-y divide-line rounded-2xl border border-line bg-surface">
@@ -432,16 +551,16 @@ function Contacto() {
   const [f, setF] = useState({ nombre: "", empresa: "", tel: "", tecnicos: "2 a 5" });
   const [sent, setSent] = useState(false);
   const msg = `Hola, soy ${f.nombre || "…"} de ${f.empresa || "…"} (${sector.nombre.toLowerCase()}, ${f.tecnicos} técnicos). He visto la demo de Nexo4Pymes y quiero verla con los datos de mi empresa.${f.tel ? ` Mi teléfono: ${f.tel}.` : ""}`;
-  const input = "h-11 w-full rounded-xl border border-white/15 bg-white/[0.06] px-3.5 text-[15px] text-white outline-none placeholder:text-white/35 focus:border-sun";
+  const input = "h-12 w-full rounded-xl border border-white/15 bg-white/[0.06] px-3.5 text-[16px] text-white outline-none placeholder:text-white/35 focus:border-sun";
   return (
-    <section id="contacto" className="relative scroll-mt-20 overflow-hidden bg-[#041820] py-24 text-white">
+    <section id="contacto" className="relative scroll-mt-20 overflow-hidden bg-[#041820] py-16 text-white sm:py-24">
       <div className="absolute inset-0 opacity-70">
         <Caustics />
       </div>
       <div className="absolute inset-0 bg-[#041820]/60" />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2">
         <div>
-          <h2 className="font-display text-[38px] leading-[1.05] font-semibold tracking-tight sm:text-[52px]">Pide tu demo con los datos de tu empresa</h2>
+          <h2 className="font-display text-[34px] leading-[1.05] font-semibold tracking-tight sm:text-[52px]">Pide tu demo con los datos de tu empresa</h2>
           <p className="mt-4 max-w-lg text-[17px] text-white/70">Te enseñamos esta misma demo con tus servicios, tus clientes y tu marca, para que tu equipo se vea usándola. Sin compromiso.</p>
           <div className="mt-8 grid gap-3 text-[15px]">
             {["Una llamada de 20 minutos para entender cómo trabajáis", "Una demo personalizada con tus datos", "Un precio cerrado por escrito"].map((t) => (
@@ -454,7 +573,7 @@ function Contacto() {
             ))}
           </div>
         </div>
-        <div className="rounded-3xl border border-white/12 bg-white/[0.06] p-6 backdrop-blur-xl">
+        <div className="rounded-3xl border border-white/12 bg-white/[0.06] p-5 backdrop-blur-xl sm:p-6">
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div key="ok" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="grid place-items-center gap-3 py-12 text-center">
@@ -488,7 +607,7 @@ function Contacto() {
                   </label>
                   <label className="grid gap-1.5 text-[13px] text-white/60">
                     Teléfono
-                    <input className={input} value={f.tel} onChange={(e) => setF({ ...f, tel: e.target.value })} inputMode="tel" autoComplete="tel" />
+                    <input type="tel" className={input} value={f.tel} onChange={(e) => setF({ ...f, tel: e.target.value })} autoComplete="tel" />
                   </label>
                   <label className="grid gap-1.5 text-[13px] text-white/60">
                     Técnicos en campo
