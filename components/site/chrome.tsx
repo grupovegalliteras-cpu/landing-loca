@@ -89,21 +89,20 @@ export const WA_HOLA = "Hola, he visto la demo de Nexo4Pymes y me gustaría verl
 export function ContactDock({ demoHref = "/demo?tour=1", mensaje = WA_HOLA }: { demoHref?: string; mensaje?: string }) {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const contacto = document.getElementById("contacto");
-    let inContact = false;
-    const upd = () => setShow(window.scrollY > 520 && !inContact);
-    const io = contacto
-      ? new IntersectionObserver(([e]) => {
-          inContact = e.isIntersecting;
-          upd();
-        })
-      : null;
-    if (contacto) io!.observe(contacto);
+    // se aparta en el formulario y en las secciones donde se escribe
+    const zonas = [document.getElementById("contacto"), ...document.querySelectorAll("[data-hide-dock]")].filter((x): x is HTMLElement => !!x);
+    const dentro = new Set<Element>();
+    const upd = () => setShow(window.scrollY > 520 && dentro.size === 0);
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => (e.isIntersecting ? dentro.add(e.target) : dentro.delete(e.target)));
+      upd();
+    }, { rootMargin: "-25% 0px -25% 0px" });
+    zonas.forEach((z) => io.observe(z));
     upd();
     window.addEventListener("scroll", upd, { passive: true });
     return () => {
       window.removeEventListener("scroll", upd);
-      io?.disconnect();
+      io.disconnect();
     };
   }, []);
   return (

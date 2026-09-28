@@ -34,7 +34,7 @@ type Actions = {
   payInvoice: (invoiceId: string, metodo?: Invoice["metodo"]) => void;
   sendReminder: (invoiceId: string) => void;
   rectify: (invoiceId: string) => void;
-  addWebRequest: (nombre: string, telefono: string, texto: string, canal?: "web" | "whatsapp") => string;
+  addWebRequest: (nombre: string, telefono: string, texto: string, canal?: "web" | "whatsapp", lectura?: Partial<Pick<Aviso, "tipo" | "urgencia" | "servicio" | "resumen">>) => string;
   addClient: (c: { nombre: string; municipio: string; contacto: string; telefono: string; tipo: string }) => string;
   requestAbsence: (techId: string, desde: string, hasta: string, tipo?: Absence["tipo"]) => string;
   resolveAbsence: (id: string, ok: boolean) => void;
@@ -382,7 +382,7 @@ export const useDemo = create<DemoState>()(
             lastChange: { ids: [invoiceId], ts: Date.now() },
           })),
 
-        addWebRequest: (nombre, telefono, texto, canal = "web") => {
+        addWebRequest: (nombre, telefono, texto, canal = "web", lectura) => {
           const low = texto.toLowerCase();
           const urg = /urgente|fuga|no funciona|sin luz|inund|ya |hoy/.test(low);
           const tipo = /precio|presupuesto|cu[aá]nto/.test(low) ? "presupuesto" : /queja|mal|otra vez/.test(low) ? "queja" : urg ? "avería" : "consulta";
@@ -398,6 +398,8 @@ export const useDemo = create<DemoState>()(
             lineas: [{ speaker: "cliente", texto, t: 0 }],
             estado: "nuevo",
             servicio: tipo === "presupuesto" ? SECTOR_POR_ID[get().sector].servicios.length - 1 : 0,
+            // si quien llama ya lo ha leído (la sección «Pruébalo tú»), se respeta esa lectura
+            ...lectura,
           };
           set((st) => ({
             avisos: [a, ...st.avisos],

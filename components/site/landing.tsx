@@ -17,6 +17,7 @@ import { PanelShell } from "@/components/panel/shell";
 import { AppShell, PhoneFrame } from "@/components/app/shell";
 import { Caustics } from "./caustics";
 import { HeroAnim } from "./hero-anim";
+import { PruebaAviso } from "./prueba-aviso";
 import { ContactDock, SiteFooter, SiteNav, WA_HOLA } from "./chrome";
 
 export function Landing() {
@@ -26,8 +27,8 @@ export function Landing() {
       <Hero />
       <SectorPicker />
       <Recorrido />
+      <PruebaAviso />
       <SoftwareReal />
-      <Calculadora />
       <Modulos />
       <Como />
       <Faq />
@@ -335,88 +336,6 @@ function SoftwareReal() {
       </div>
     </section>
   );
-}
-
-/* ---------------- Calculadora ---------------- */
-function Rango({ label, value, min, max, onChange, fmtv }: { label: string; value: number; min: number; max: number; onChange: (v: number) => void; fmtv: (v: number) => string }) {
-  return (
-    <label className="grid gap-1.5">
-      <span className="flex items-baseline justify-between gap-3 text-[14px]">
-        <span className="text-fg-2">{label}</span>
-        <span className="font-display text-[20px] font-semibold tabular">{fmtv(value)}</span>
-      </span>
-      <input type="range" min={min} max={max} value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-8 w-full cursor-pointer accent-[var(--sun)]" />
-    </label>
-  );
-}
-
-const DIAS_MES = 21;
-
-function Calculadora() {
-  const [tec, setTec] = useState(4);
-  const [trab, setTrab] = useState(4);
-  const [min, setMin] = useState(15);
-  const [coste, setCoste] = useState(22);
-  const horas = (tec * trab * min * DIAS_MES) / 60;
-  const euros = horas * coste;
-  const msg = `Hola, he hecho el cálculo en vuestra web: somos ${tec} técnicos, con unos ${trab} trabajos al día cada uno, y se nos van unas ${fmt.num(horas, 0)} horas al mes en papeleo. Me gustaría ver cómo lo reduciríais.`;
-  return (
-    <section id="calculadora" className="scroll-mt-20 py-16 sm:py-24">
-      <div className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-2 lg:gap-12">
-        <div>
-          <h2 className="font-display text-[30px] leading-tight font-semibold tracking-tight sm:text-[44px]">¿Cuánto tiempo se os va en papeles?</h2>
-          <p className="mt-3 text-[16px] text-fg-2 sm:text-[17px]">Apuntar el aviso, llamar al técnico, pasar el parte a limpio, hacer la factura. Mueve los valores con los números de tu empresa.</p>
-          <div className="mt-8 grid gap-5 rounded-2xl border border-line bg-surface p-5 sm:p-6">
-            <Rango label="Técnicos en campo" value={tec} min={1} max={30} onChange={setTec} fmtv={(v) => String(v)} />
-            <Rango label="Trabajos al día por técnico" value={trab} min={1} max={12} onChange={setTrab} fmtv={(v) => String(v)} />
-            <Rango label="Minutos de papeleo por trabajo" value={min} min={5} max={45} onChange={setMin} fmtv={(v) => `${v} min`} />
-            <Rango label="Coste de una hora de oficina" value={coste} min={12} max={45} onChange={setCoste} fmtv={(v) => `${v} €`} />
-          </div>
-        </div>
-        <div className="flex flex-col justify-center rounded-3xl bg-[#041820] p-6 text-white ring-1 ring-white/10 sm:p-8">
-          <div className="text-[14px] text-white/60">Con tus números, cada mes se van en papeleo</div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <AnimatedCounter value={horas} className="font-display text-[64px] leading-none font-semibold tracking-tight sm:text-[84px]" />
-            <span className="font-display text-[24px] font-semibold text-white/70">horas</span>
-          </div>
-          <div className="mt-3 text-[17px] text-white/80">
-            Unos <span className="font-semibold text-sun tabular">{fmt.eur0(euros)}</span> al mes en tiempo de oficina, o <span className="tabular">{fmt.num(horas / 8, 0)}</span> jornadas completas.
-          </div>
-          <div className="mt-6 grid gap-2 text-[14px] text-white/70">
-            {["El aviso entra ya clasificado, sin apuntarlo", "El parte llega del móvil con fotos y firma", "La factura sale del parte, sin teclearla"].map((t) => (
-              <div key={t} className="flex items-center gap-2">
-                <Check className="size-4 shrink-0 text-[#7fe3b8]" /> {t}
-              </div>
-            ))}
-          </div>
-          <a href={whatsappLink(msg)} target="_blank" rel="noreferrer" className="mt-7 flex h-12 items-center justify-center gap-2 rounded-xl bg-sun text-[15px] font-semibold text-[#1d1300] hover:brightness-105">
-            <MessageCircle className="size-5" /> Envíanos tu cálculo por WhatsApp
-          </a>
-          <p className="mt-3 text-[12px] text-white/45">Estimación orientativa hecha con tus datos y {DIAS_MES} días laborables al mes. En el diagnóstico lo medimos de verdad.</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AnimatedCounter({ value, className }: { value: number; className?: string }) {
-  const [shown, setShown] = useState(value);
-  const from = useRef(value);
-  useEffect(() => {
-    const start = performance.now();
-    const a = from.current;
-    let raf = 0;
-    const tick = (now: number) => {
-      const k = Math.min(1, (now - start) / 350);
-      const v = a + (value - a) * (1 - Math.pow(1 - k, 3));
-      setShown(v);
-      from.current = v;
-      if (k < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [value]);
-  return <span className={cn("tabular", className)}>{fmt.num(shown, 0)}</span>;
 }
 
 /* ---------------- Módulos ---------------- */
