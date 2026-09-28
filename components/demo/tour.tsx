@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronLeft, ChevronRight, MessageCircle, Pause, Play, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle, Monitor, Pause, Play, Smartphone, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LIVE_SPEED, useDemo } from "@/store/demo";
 import { useUi, type AppRoute } from "@/store/ui";
@@ -315,14 +315,17 @@ function TourProgress({ t }: { t: ReturnType<typeof useTour> }) {
   );
 }
 
-export function TourCard({ t }: { t: ReturnType<typeof useTour> }) {
+const WA_TOUR = "Hola, he visto el recorrido de la demo de Nexo4Pymes y me gustaría verla con los datos de mi empresa.";
+
+export function TourCard({ t, compact = false }: { t: ReturnType<typeof useTour>; compact?: boolean }) {
   if (!t.active) return null;
+  if (compact) return <TourCardCompact t={t} />;
   const s = STEPS[t.step];
   const end = t.step >= STEPS.length;
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-auto w-full overflow-hidden rounded-2xl lg:w-[440px] border border-white/10 bg-[#0c1a22]/95 text-white shadow-e3 backdrop-blur-xl" role="region" aria-label="Recorrido guiado">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-auto w-[440px] overflow-hidden rounded-2xl border border-white/10 bg-[#0c1a22]/95 text-white shadow-e3 backdrop-blur-xl" role="region" aria-label="Recorrido guiado">
       {!end && <TourProgress t={t} />}
-      <div className="p-3 sm:p-4">
+      <div className="p-4">
         <div className="flex items-center justify-between text-xs text-white/50">
           <span className="tabular">{end ? "Fin del recorrido" : `Paso ${t.step + 1} de ${STEPS.length}`}</span>
           <button onClick={t.stop} className="grid size-6 place-items-center rounded-md hover:bg-white/10" aria-label="Cerrar recorrido">
@@ -331,42 +334,35 @@ export function TourCard({ t }: { t: ReturnType<typeof useTour> }) {
         </div>
         <AnimatePresence mode="wait">
           <motion.div key={t.step} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25 }}>
-            {end ? (
-              <>
-                <div className="mt-0.5 font-display text-lg font-semibold sm:mt-1 sm:text-xl">De la llamada a la factura cobrada, sin papeles</div>
-                <p className="mt-1 text-[13px] leading-snug text-white/75 sm:mt-1.5 sm:text-[14px] sm:leading-relaxed">Esto es lo que hace tu equipo cada día, pero sin apuntar, sin llamar para preguntar y sin pasar nada a mano. Lo montamos con los datos de tu empresa.</p>
-              </>
-            ) : (
-              <>
-                <div className="mt-0.5 font-display text-lg leading-tight font-semibold sm:mt-1 sm:text-xl">{s.title}</div>
-                <p className="mt-1 text-[13px] leading-snug text-white/75 sm:mt-1.5 sm:text-[14px] sm:leading-relaxed">{s.text}</p>
-              </>
-            )}
+            <div className="mt-1 font-display text-xl font-semibold">{end ? "De la llamada a la factura cobrada, sin papeles" : s.title}</div>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-white/75">
+              {end ? "Esto es lo que hace tu equipo cada día, pero sin apuntar, sin llamar para preguntar y sin pasar nada a mano. Lo montamos con los datos de tu empresa." : s.text}
+            </p>
           </motion.div>
         </AnimatePresence>
-        <div className="mt-3 flex items-center gap-2 sm:mt-4">
+        <div className="mt-4 flex items-center gap-2">
           {end ? (
             <>
               <button onClick={t.start} className="h-10 rounded-lg px-3 text-[13px] text-white/80 hover:bg-white/10">
                 Ver otra vez
               </button>
-              <a href={whatsappLink("Hola, he visto el recorrido de la demo de Nexo4Pymes y me gustaría verla con los datos de mi empresa.")} target="_blank" rel="noreferrer" className="ml-auto flex h-10 items-center gap-2 rounded-lg bg-sun px-4 text-[14px] font-semibold text-[#1d1300]">
+              <a href={whatsappLink(WA_TOUR)} target="_blank" rel="noreferrer" className="ml-auto flex h-10 items-center gap-2 rounded-lg bg-sun px-4 text-[14px] font-semibold text-[#1d1300]">
                 <MessageCircle className="size-4" /> La quiero con mis datos
               </a>
             </>
           ) : (
             <>
-              <button onClick={() => t.go(t.step - 1)} disabled={t.step === 0} className="grid size-10 place-items-center rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30" aria-label="Paso anterior">
+              <button onClick={() => t.go(t.step - 1)} disabled={t.step === 0} className="grid size-9 place-items-center rounded-lg hover:bg-white/10 disabled:opacity-30" aria-label="Paso anterior">
                 <ChevronLeft className="size-4" />
               </button>
-              <button onClick={() => t.setPlaying(!t.playing)} className="flex h-10 items-center gap-1.5 rounded-lg bg-white/10 px-3 text-[13px] font-medium hover:bg-white/15" aria-label={t.playing ? "Pausar" : "Reanudar"}>
+              <button onClick={() => t.setPlaying(!t.playing)} className="flex h-9 items-center gap-1.5 rounded-lg bg-white/10 px-3 text-[13px] font-medium hover:bg-white/15" aria-label={t.playing ? "Pausar" : "Reanudar"}>
                 {t.playing ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
                 {t.playing ? "Pausar" : "Seguir"}
               </button>
-              <button onClick={() => t.go(t.step + 1)} className="flex h-10 items-center gap-1 rounded-lg bg-white text-[#0c1a22] px-3 text-[13px] font-semibold hover:bg-white/90 max-lg:ml-auto" aria-label="Paso siguiente">
+              <button onClick={() => t.go(t.step + 1)} className="flex h-9 items-center gap-1 rounded-lg px-3 text-[13px] font-medium hover:bg-white/10" aria-label="Paso siguiente">
                 Siguiente <ChevronRight className="size-4" />
               </button>
-              <span className="ml-auto hidden text-[11px] text-white/40 lg:inline">Espacio para pausar</span>
+              <span className="ml-auto text-[11px] text-white/40">Espacio para pausar</span>
             </>
           )}
         </div>
@@ -375,7 +371,71 @@ export function TourCard({ t }: { t: ReturnType<typeof useTour> }) {
   );
 }
 
-/** Anillo que señala un elemento con data-tour */
+/** En el móvil la pantalla es lo importante: la guía ocupa lo mínimo y los controles caben en una fila. */
+function TourCardCompact({ t }: { t: ReturnType<typeof useTour> }) {
+  const s = STEPS[t.step];
+  const end = t.step >= STEPS.length;
+  const lado = s ? (s.mobile ?? (s.side === "app" ? "app" : "panel")) : "panel";
+  const btn = "grid size-9 shrink-0 place-items-center rounded-lg";
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden rounded-2xl border border-white/10 bg-[#0c1a22] text-white shadow-e3" role="region" aria-label="Recorrido guiado">
+      {!end && <TourProgress t={t} />}
+      <div className="px-3 pt-2 pb-3">
+        <div className="flex items-center gap-2">
+          {end ? (
+            <span className="text-[12px] text-white/50">Fin del recorrido</span>
+          ) : (
+            <>
+              <span className={cn("flex h-6 items-center gap-1 rounded-md px-1.5 text-[11px] font-semibold", lado === "app" ? "bg-sun/15 text-sun" : "bg-white/10 text-white/80")}>
+                {lado === "app" ? <Smartphone className="size-3" /> : <Monitor className="size-3" />}
+                {lado === "app" ? "Móvil del técnico" : "Oficina"}
+              </span>
+              <span className="text-[12px] text-white/45 tabular">
+                {t.step + 1}/{STEPS.length}
+              </span>
+            </>
+          )}
+          <div className="ml-auto flex items-center gap-1">
+            {!end && (
+              <>
+                <button onClick={() => t.go(t.step - 1)} disabled={t.step === 0} className={cn(btn, "bg-white/5 disabled:opacity-30")} aria-label="Paso anterior">
+                  <ChevronLeft className="size-4" />
+                </button>
+                <button onClick={() => t.setPlaying(!t.playing)} className={cn(btn, "bg-white/10")} aria-label={t.playing ? "Pausar" : "Reanudar"}>
+                  {t.playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+                </button>
+                <button onClick={() => t.go(t.step + 1)} className={cn(btn, "bg-white text-[#0c1a22]")} aria-label="Paso siguiente">
+                  <ChevronRight className="size-4" />
+                </button>
+              </>
+            )}
+            <button onClick={t.stop} className={cn(btn, "text-white/60")} aria-label="Cerrar recorrido">
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
+        <div className="mt-1.5 font-display text-[17px] leading-tight font-semibold">{end ? "De la llamada a la factura cobrada, sin papeles" : s.title}</div>
+        <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-white/70">{end ? "Esto es lo que hace tu equipo cada día, sin apuntar nada ni pasar nada a mano. Lo montamos con los datos de tu empresa." : s.text}</p>
+        {end && (
+          <div className="mt-3 grid grid-cols-[auto_1fr] gap-2">
+            <button onClick={t.start} className="h-11 rounded-xl bg-white/10 px-4 text-[14px] font-medium">
+              Otra vez
+            </button>
+            <a href={whatsappLink(WA_TOUR)} target="_blank" rel="noreferrer" className="flex h-11 items-center justify-center gap-2 rounded-xl bg-sun text-[14px] font-semibold text-[#1d1300]">
+              <MessageCircle className="size-4" /> La quiero con mis datos
+            </a>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+/**
+ * Señala el elemento con data-tour. En escritorio, un anillo flotante que lo sigue.
+ * En móvil, el propio elemento se marca (así se mueve con él y no se sale del hueco)
+ * y se desplaza la pantalla hasta dejarlo a la vista.
+ */
 export function Spotlight() {
   const target = useUi((s) => s.spotlight);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -384,20 +444,47 @@ export function Spotlight() {
       setRect(null);
       return;
     }
+    const small = window.innerWidth < 1024;
     let raf = 0;
     let last = "";
+    let marked: Element | null = null;
     const tick = () => {
       const el = document.querySelector(`[data-tour="${target}"]`);
-      const r = el?.getBoundingClientRect() ?? null;
-      const key = r ? `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}` : "";
-      if (key !== last) {
-        last = key;
-        setRect(r && r.width > 0 ? r : null);
+      if (small) {
+        if (el && el !== marked) {
+          marked?.removeAttribute("data-spot");
+          el.setAttribute("data-spot", "");
+          // lo alto se enseña desde arriba, que es donde está lo que acaba de cambiar
+          // solo en vertical y solo en su contenedor con scroll: scrollIntoView también movía cajas en horizontal
+          let box = el.parentElement;
+          while (box && !/(auto|scroll)/.test(getComputedStyle(box).overflowY)) box = box.parentElement;
+          if (box) {
+            const cr = box.getBoundingClientRect();
+            const er = el.getBoundingClientRect();
+            const alto = er.height > cr.height * 0.6;
+            const top = box.scrollTop + (er.top - cr.top) - (alto ? 8 : (cr.height - er.height) / 2);
+            box.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+          }
+          marked = el;
+        }
+      } else {
+        const r = el?.getBoundingClientRect() ?? null;
+        const key = r ? `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}` : "";
+        if (key !== last) {
+          last = key;
+          setRect(r && r.width > 0 ? r : null);
+        }
       }
-      raf = requestAnimationFrame(tick);
+      if (!small) raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    // en móvil basta con mirar de vez en cuando si el elemento ya está en pantalla
+    const iv = small ? window.setInterval(tick, 250) : 0;
+    if (!small) raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearInterval(iv);
+      marked?.removeAttribute("data-spot");
+    };
   }, [target]);
   return (
     <AnimatePresence>
@@ -408,7 +495,7 @@ export function Spotlight() {
           animate={{ opacity: 1, scale: 1, left: rect.x - 6, top: rect.y - 6, width: rect.width + 12, height: rect.height + 12 }}
           exit={{ opacity: 0 }}
           transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-          className={cn("pointer-events-none fixed z-[95] rounded-2xl border-2 border-sun shadow-[0_0_0_4px_rgb(245_171_46/0.25),0_0_40px_rgb(245_171_46/0.35)]")}
+          className="pointer-events-none fixed z-[95] rounded-2xl border-2 border-sun shadow-[0_0_0_4px_rgb(245_171_46/0.25),0_0_40px_rgb(245_171_46/0.35)]"
           style={{ left: rect.x - 6, top: rect.y - 6, width: rect.width + 12, height: rect.height + 12 }}
         />
       )}

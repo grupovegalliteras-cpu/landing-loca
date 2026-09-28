@@ -57,6 +57,7 @@ export function DemoPage() {
   const stage = useRef<HTMLDivElement>(null);
   const onView = useCallback((side: "panel" | "app") => setView(side), []);
   const tour = useTour(onView);
+  const guiado = tour.active && !wide;
 
   useEffect(() => {
     const upd = () => {
@@ -86,7 +87,8 @@ export function DemoPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-[#0a161c] text-fg">
-      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-white/10 px-3 text-white sm:px-4">
+      {/* en el móvil, durante el recorrido, fuera barras: toda la pantalla para la demo */}
+      <header className={cn("flex h-14 shrink-0 items-center gap-3 border-b border-white/10 px-3 text-white sm:px-4", guiado && "hidden")}>
         <Link href="/" className="flex items-center gap-2" aria-label="Inicio de Nexo4Pymes">
           <Logo className="h-6 max-[400px]:[&>span]:hidden" light />
         </Link>
@@ -121,7 +123,7 @@ export function DemoPage() {
       </header>
 
       {/* selector en pantallas pequeñas */}
-      <div className="flex justify-center gap-1 border-b border-white/10 p-1.5 lg:hidden">
+      <div className={cn("flex justify-center gap-1 border-b border-white/10 p-1.5 lg:hidden", guiado && "hidden")}>
         {(["panel", "app"] as const).map((v) => (
           <button key={v} onClick={() => setView(v)} className={cn("flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg text-[13px] font-medium", view === v ? "bg-white text-[#0a161c]" : "text-white/70")}>
             {v === "panel" ? <Monitor className="size-4" /> : <Smartphone className="size-4" />}
@@ -130,7 +132,7 @@ export function DemoPage() {
         ))}
       </div>
 
-      <div ref={stage} className="relative flex min-h-0 flex-1 gap-4 p-2 sm:p-3 lg:gap-5">
+      <div ref={stage} className={cn("relative flex min-h-0 flex-1 gap-4 p-2 sm:p-3 lg:gap-5", guiado && "pt-[max(0.5rem,env(safe-area-inset-top))]")}>
         <div className={cn("min-w-0 flex-1 overflow-hidden rounded-2xl border border-white/10 shadow-e3", view !== "panel" && "max-lg:hidden")}>
           <ScaledBox>
             <PanelShell mode="embedded" compact />
@@ -154,7 +156,7 @@ export function DemoPage() {
       </div>
       {/* en móvil el recorrido va debajo, sin tapar la pantalla; en escritorio flota abajo a la izquierda */}
       <div className="z-[96] shrink-0 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] empty:hidden lg:pointer-events-none lg:fixed lg:bottom-6 lg:left-6 lg:p-0">
-        <TourCard t={tour} />
+        <TourCard t={tour} compact={!wide} />
       </div>
       <Spotlight />
     </div>

@@ -230,3 +230,15 @@ body {
   --map-sierra: rgb(80 160 90 / 0.08);
   --map-town: #7d93a0;
 }
+
+/* Recorrido guiado en móvil: se marca el propio elemento señalado */
+[data-spot] {
+  outline: 2px solid var(--sun);
+  outline-offset: -2px;
+  border-radius: 14px;
+  animation: spot-pulse 1.6s ease-in-out infinite;
+}
+@keyframes spot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(245 171 46 / 0.45); }
+  50% { box-shadow: 0 0 0 6px rgb(245 171 46 / 0.12); }
+}
